@@ -1,0 +1,48 @@
+.navigation{
+    float: right;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.navigation a{
+    height: 100%;
+    display: table;
+    float: left;
+    padding: 0px 20px;
+    background-color: #101010;
+}
+
+.navigation a li{
+    vertical-align: middle;
+    display: table-cell;
+    font-size: 20px;
+    color: white;
+}
+
+.navigation a:hover{
+    background-color: gray;
+    color: #101010;
+}
+
+.inner-header {
+    display: flex;
+    background-color: #101010;
+    color: white;
+    align-items: center;
+  }
+
+.image{
+float:left;
+width:20%;
+margin-right:10px;
+
+}
+
+.image img {
+    display:block;
+    width:100%;
+}
+
+.content {
+    padding: 5%;
+}
