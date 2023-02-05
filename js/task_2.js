@@ -9,14 +9,14 @@ const obj_1 = {prop_1:'11', prop_2:'22'}
 const obj_2 = Object.create(obj_1)
 obj_2.prop_3 = '333'
 
-function hasStrProperties (askKey, getObj){
+function hasStrProperties (askKeyStr, getObj){
     for (let key in getObj) {
 
-        if (key === askKey) {
-    
+        if (key === askKeyStr) {
+
             // console.log(key);
             return true
-        } 
+        }
         return false
 
     }

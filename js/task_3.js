@@ -4,8 +4,9 @@
 
 function emptyObj() {
     // return {}
-    return Object()
+    // return Object()
+    return Object.create(null)
 }
-console.log(emptyObj())
+console.log(emptyObj()) // {}
 
-console.log(Object.getPrototypeOf(emptyObj()))
+console.log(Object.getPrototypeOf(emptyObj())) // null
