@@ -32,8 +32,8 @@
 // 7. использование синтаксиса ES6 (кроме
 //    функции-конструкторов) и т. д.
 
-let lamp = { wattPower: 10 }
-let comp = { wattPower: 20 }
+// let lamp = { wattPower: 10 }
+// let comp = { wattPower: 20 }
 
 function soketSumPower() {
     let summPower = 0
@@ -65,57 +65,87 @@ function ElectricDevices(wattPower) {
     this.wattPower = wattPower
     // New device is unplgged
     this.isPlugged = false
-    this.plugSocket = function () {
-        if (!this.isPlugged) {
-            this.isPlugged = true
-            console.log('device is plug in socket')
-        }
-    }
-    this.unPlugSocket = function () {
-        if (this.isPlugged) {
-            console.log('device is unplug in socket')
-            this.isPlugged = false
-
-        }
-    }
-
 }
+
+ElectricDevices.prototype.plugSocket = function () {
+    if (!this.isPlugged) {
+        this.isPlugged = true
+        console.log('device is plug in socket')
+    }
+}
+
+ElectricDevices.prototype.unPlugSocket = function () {
+    if (this.isPlugged) {
+        console.log('device is unplug in socket')
+        this.isPlugged = false
+
+    }
+}
+
 
 function Lamps() {
     this.light = false
-    this.lightOn = function () {
-        if (!this.light) {
-            console.log('Lamp turn on')
-
-            this.light = true
-        }
-    }
-    this.lightOff = function () {
-        if (this.light) {
-            console.log('Lamp turn off')
-
-            this.light = false
-        }
-    }
-
-}
-
-function Computers() {
-
 }
 
 Lamps.prototype = new ElectricDevices(60)
+Lamps.prototype.lightOn = function () {
+    if (!this.light) {
+        if (this.isPlugged) {
+            console.log('Lamp is on')
+
+            this.light = true
+        }
+        else {
+            console.log('plug lamp in socket first')
+        }
+    }
+}
+
+Lamps.prototype.lightOff = function () {
+    if (this.light) {
+        console.log('Lamp turn off')
+
+        this.light = false
+    }
+}
+
+
+function Computers() {
+}
+
 Computers.prototype = new ElectricDevices(150)
+Computers.prototype.runServer = function () {
+    if (this.isPlugged) {
+        console.log('server run')
+    }
+    else {
+        console.log('plug comp in socket first')
+    }
+}
+
+Computers.prototype.playGame = function () {
+    if (this.isPlugged) {
+        console.log('Game is playing')
+    }
+    else {
+        console.log('plug comp in socket first')
+    }
+}
+
+// testing
 
 myLamp = new Lamps()
 myComp = new Computers()
 
-console.log(soketSumPower(lamp, comp))
 console.log(myLamp)
 console.log(myComp)
+myLamp.lightOn()
 myLamp.plugSocket()
 myLamp.lightOn()
+myComp.runServer()
+console.log(soketSumPower(myLamp, myComp))
 myComp.plugSocket()
+myComp.runServer()
 console.log(soketSumPower(myLamp, myComp))
 
 
