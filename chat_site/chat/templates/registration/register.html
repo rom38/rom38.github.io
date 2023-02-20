@@ -1,0 +1,25 @@
+{% extends "default.html" %}
+
+{% block content %}
+
+
+<!--Register-->
+<div class="container py-5">
+	<h1>Register</h1>
+    {% for field in register_form %}
+    <div class="fieldWrapper">
+        {{ field.errors }}
+    </div>
+    {% endfor %}
+    <div class="fieldWrapper">
+        {{ register_form.errors }}
+    </div>
+	<form method="POST">
+		{% csrf_token %}
+		{{ register_form.as_table }}
+		<button class="btn btn-primary" type="submit">Register</button>
+	</form>
+	<p class="text-center">If you already have an account, <a href="/login">login</a> instead.</p>
+</div>
+
+{% endblock %}
