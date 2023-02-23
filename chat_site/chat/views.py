@@ -50,7 +50,13 @@ class CreateProfilePageView(CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
-    success_url = reverse_lazy('login')
+    def get_success_url(self):
+        pk = self.request.user.id
+        return reverse_lazy('user_profile',
+                            kwargs={'pk': pk})
+
+    # success_url = reverse_lazy('user_profile')
+
 
 class UpdateProfilePageView(UpdateView):
     model = UserProfile
@@ -62,7 +68,10 @@ class UpdateProfilePageView(UpdateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
-    success_url = reverse_lazy('login')
+    def get_success_url(self):
+        pk = self.request.user.id
+        return reverse_lazy('user_profile',
+                            kwargs={'pk': pk})
 
 
 def register_request(request):
