@@ -4,6 +4,7 @@
 <div class="card-body">
     <form method="POST" action="" enctype="multipart/form-data">
         {% csrf_token %}
+        <img src="{{ form.instance.profile_pic.url }}" height="200"/><br/>
         {{form.as_p}}
         <input class="button" type="submit" value="Submit">
     </form>

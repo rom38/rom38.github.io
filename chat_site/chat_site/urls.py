@@ -19,7 +19,10 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth.views import LogoutView
 
-from chat.views import register_request, ShowProfilePageView, start_page, UpdateProfilePageView, CreateProfilePageView
+from chat.views import (register_request, ShowProfilePageView,
+                        start_page, UpdateProfilePageView,
+                        CreateProfilePageView, RoomList, whoami_view,
+                        UserList)
 
 # from
 
@@ -31,9 +34,12 @@ urlpatterns = [
     path('chat/', include('chat.urls')),
     path('admin/', admin.site.urls),
     path('accounts/register/', register_request, name="register"),
+    path('accounts/whoami/', whoami_view),
     path('accounts/profile/<int:pk>/', ShowProfilePageView.as_view(), name="user_profile"),
     path('accounts/profile/<int:pk>/update/', UpdateProfilePageView.as_view(), name="user_profile_update"),
     path('accounts/profile/<int:pk>/create/', CreateProfilePageView.as_view(), name="user_profile_create"),
+    path('room/list/', RoomList.as_view(), name="room_list"),
+    path('user/list/', UserList.as_view(), name="user_list"),
 
 
 

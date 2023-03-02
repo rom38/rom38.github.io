@@ -11,3 +11,10 @@ class UserProfile(models.Model):
     profile_pic = models.ImageField(null=True, blank=True, upload_to="images/profile/")
     def __str__(self):
         return str(self.user)
+
+
+class Room(models.Model):
+    name = models.CharField(max_length=20)
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+        related_name='user_rooms')
