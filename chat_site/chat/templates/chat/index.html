@@ -1,7 +1,7 @@
 {% extends "default.html" %}
 
 {% block content %}
-
+    {% csrf_token %}
     В какую чат-комнату вы хотите войти?<br>
     <input id="room-name-input" type="text" size="100" value="default"><br>
     <input id="room-name-submit" type="button" class="btn btn-primary" value="Enter">
@@ -10,7 +10,16 @@
     <ol id="user-list">
 
     </ol>
-    <button id="user-list-get" class="btn btn-primary">Manual refresh users</button>
+    <button id="user-list-get" class="btn btn-primary">Ручное обновление списка</button>
+    <br>
+    <br>
+    <h2>Добавить или изменить имя комнаты</h2>
+    <input id="add-room-name" type="text" size="100" value="default">
+    <button id="add-room-btn" class="btn btn-primary">Добавить новую комнату</button>
+
+    <textarea id="chat-log" class="form-control"  rows="10"></textarea><br>
+    <input id="chat-message-input" type="text" class="form-control" ><br>
+    <input id="chat-message-submit" class="btn btn-primary" type="button" value="Send">
     {{ user_1|json_script:"user" }}
 
     <script>
@@ -64,7 +73,74 @@
             .then((res) => res.json())
             .then((data) => {
                 console.log("You are logged in as: " + data.username);
+                return data;
             })
+            .catch((err) => {
+                console.log(err);
+            });
+        };
+
+        function remove_room(room_id){
+            // const remove_url = `http://${window.location.host}/room/${room_id}/`
+            const remove_url = `/room/${room_id}/`
+            fetch(remove_url, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": '{{csrf_token}}',
+                },
+                credentials: "same-origin",
+                method: 'DELETE'
+            })
+            .then((res) => refresh_users())
+            .catch((err) => {
+                console.log(err);
+            });
+        }
+
+        function add_room(){
+            const room_name = document.querySelector("#add-room-name").value;
+            const user = JSON.parse(document.getElementById('user').textContent);
+            const room = {
+                owner: user.pk,
+                name: room_name
+            };
+            // const add_url = `http://${window.location.host}/room/list/`
+            const add_url = `/room/list/`
+            fetch(add_url, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": '{{csrf_token}}',
+                },
+                credentials: "same-origin",
+                method: 'POST',
+                body: JSON.stringify(room)
+            })
+            .then((res) => refresh_users())
+            .catch((err) => {
+                console.log(err);
+            });
+        }
+
+        function update_room(room_id){
+            const room_name = document.querySelector("#add-room-name").value;
+            const user = JSON.parse(document.getElementById('user').textContent);
+            const room = {
+                id: room_id,
+                owner: user.pk,
+                name: room_name
+            };
+            // const add_url = `http://${window.location.host}/room/list/`
+            const update_url = `/room/${room_id}/`
+            fetch(update_url, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": '{{csrf_token}}',
+                },
+                credentials: "same-origin",
+                method: 'PUT',
+                body: JSON.stringify(room)
+            })
+            .then((res) => refresh_users())
             .catch((err) => {
                 console.log(err);
             });
@@ -74,9 +150,10 @@
             const user = JSON.parse(document.getElementById('user').textContent);
             console.log(user)
             // const url_room = "http://127.0.0.1:8000/room/list/";
-            const url_room = "http://127.0.0.1:8000/user/list/";
+            const url_room = "/user/list/";
             let resp_user_list = await fetch(url_room, {
                 method: 'GET',
+                credentials: "same-origin",
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -96,18 +173,22 @@
                         room_li.innerHTML = `<b>Комната:</b> ${element2.name} `;
                         room_li.id = `${element2.id}_${element2.name}`;
                         let btn_enter = document.createElement('button');
-                        btn_enter.innerHTML='подключиться к чату'
-                        btn_enter.className = 'btn btn-primary'
+                        btn_enter.innerHTML='подключиться к чату';
+                        btn_enter.className = 'btn btn-primary';
+                        btn_enter.setAttribute( 'onclick', `update_room(${element2.id})`);
+
                         room_li.append(btn_enter);
                         if (user.pk === element.id) {
                             let btn_upd = document.createElement('button');
-                            btn_upd.innerHTML='изменить имя комнаты'
-                            btn_upd.className = 'btn btn-warning'
+                            btn_upd.innerHTML='изменить имя комнаты';
+                            btn_upd.className = 'btn btn-warning';
+                            btn_upd.setAttribute( 'onclick', `update_room(${element2.id})`);
                             room_li.append(btn_upd);
 
                             let btn_del = document.createElement('button');
-                            btn_del.innerHTML='удалить комнату'
-                            btn_del.className = 'btn btn-danger'
+                            btn_del.innerHTML='удалить комнату';
+                            btn_del.className = 'btn btn-danger';
+                            btn_del.setAttribute( 'onclick', `remove_room(${element2.id})`);
                             room_li.append(btn_del);
                         }
                         room_ol.append(room_li);
@@ -123,6 +204,47 @@
             console.log(data_user_list);
             document.querySelector('#user-list').value += (data_user_list.name + '\n');
         };
+        function chat_func(){
+            // const roomName = JSON.parse(document.getElementById('room-name').textContent);
+
+            const chatSocket = new WebSocket(
+                'ws://'
+                + window.location.host
+                + '/ws/chat/'
+                + roomName
+                + '/'
+            );
+
+            chatSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                document.querySelector('#chat-log').value += (data.message + '\n');
+            };
+
+            chatSocket.onclose = function(e) {
+                console.error('Chat socket closed unexpectedly');
+            };
+
+            document.querySelector('#chat-message-input').focus();
+            document.querySelector('#chat-message-input').onkeyup = function(e) {
+                if (e.keyCode === 13) {  // enter, return
+                    document.querySelector('#chat-message-submit').click();
+                }
+            };
+
+            document.querySelector('#chat-message-submit').onclick = function(e) {
+                const messageInputDom = document.querySelector('#chat-message-input');
+                const message = '{{ user.username }}: ' + messageInputDom.value;
+                chatSocket.send(JSON.stringify({
+                    'message': message
+                }));
+                messageInputDom.value = '';
+            };
+        }
+
+
+
+        addNewRoomBtn = document.querySelector('#add-room-btn')
+        addNewRoomBtn.addEventListener('click', add_room, false);
 
         document.querySelector('#user-list-get').onclick = refresh_users;
 

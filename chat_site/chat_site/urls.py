@@ -22,7 +22,7 @@ from django.contrib.auth.views import LogoutView
 from chat.views import (register_request, ShowProfilePageView,
                         start_page, UpdateProfilePageView,
                         CreateProfilePageView, RoomList, whoami_view,
-                        UserList)
+                        UserList, RoomDetail)
 
 # from
 
@@ -38,6 +38,7 @@ urlpatterns = [
     path('accounts/profile/<int:pk>/', ShowProfilePageView.as_view(), name="user_profile"),
     path('accounts/profile/<int:pk>/update/', UpdateProfilePageView.as_view(), name="user_profile_update"),
     path('accounts/profile/<int:pk>/create/', CreateProfilePageView.as_view(), name="user_profile_create"),
+    path('room/<int:pk>/', RoomDetail.as_view(), name="room_detail"),
     path('room/list/', RoomList.as_view(), name="room_list"),
     path('user/list/', UserList.as_view(), name="user_list"),
 

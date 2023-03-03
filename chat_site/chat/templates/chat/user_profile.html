@@ -9,10 +9,10 @@
     {% else %}
       {# <img src="{% static 'base\images\profile\user.png' %}" height=100 width=100><br><br> #}
     {% endif %}
-      <p><strong>Username:</strong> {{ page_user }}</p><br>
-      <p><strong>Username:</strong> {{ user.username }}</p><br><br>
-      <p><strong>Userprofile:</strong> {{ user_prof_exist }}</p><br><br>
-      <p><strong>Userprofile_id:</strong> {{ user.user_profile.id }}</p><br><br>
+      {# <p><strong>Username:</strong> {{ page_user }}</p><br> #}
+      <p><strong>Username:</strong> {{ user.username }}</p>
+      <p><strong>Userprofile:</strong> {{ user_prof_exist }}</p>
+      {# <p><strong>Userprofile_id:</strong> {{ user.user_profile.id }}</p><br><br> #}
 
       <!-- {% if user.id == page_user.id %}
       <a href="{% url 'user_profile_update' user.id %}"><button class="button">Edit</button></a>

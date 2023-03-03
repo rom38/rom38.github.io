@@ -7,10 +7,8 @@ from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LogoutView
 from rest_framework.authtoken.models import Token
-from rest_framework.generics import ListCreateAPIView
-
-
-
+from rest_framework.generics import (ListCreateAPIView,
+                                     RetrieveUpdateDestroyAPIView)
 
 from .models import UserProfile, Room
 from .forms import NewUserForm
@@ -23,9 +21,16 @@ class RoomList(ListCreateAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerial
 
+
+class RoomDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerial
+
+
 class UserList(ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerial
+
 
 def whoami_view(request):
     if not request.user.is_authenticated:
