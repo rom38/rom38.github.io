@@ -3,8 +3,10 @@
 {% block content %}
     {% csrf_token %}
     В какую чат-комнату вы хотите войти?<br>
-    <input id="room-name-input" type="text" size="100" value="default"><br>
-    <input id="room-name-submit" type="button" class="btn btn-primary" value="Enter">
+    <div class="input-group mb-2">
+    <input id="room-name-input" class="form-control col-2" type="text" size="100" value="default">
+    <input id="room-name-submit" type="button" class="btn btn-primary col-3" value="Enter">
+    </div>
 
     <h2>Список пользователей и комнат</h2>
     <ol id="user-list">
@@ -14,12 +16,17 @@
     <br>
     <br>
     <h2>Добавить или изменить имя комнаты</h2>
-    <input id="add-room-name" type="text" size="100" value="default">
-    <button id="add-room-btn" class="btn btn-primary">Добавить новую комнату</button>
-
+    <div class="input-group mb-2">
+    <input id="add-room-name" class="form-control col-2" type="text" size="100" value="default">
+    <button id="add-room-btn" class="btn btn-primary">Добавить, изменить комнату</button>
+    </div>
+    <h2>Чат</h2>
+    <div><strong>Пользователь: </strong> <span>{{user.username}}</span>, <strong>Комната: </strong> <span id="span-room-name">не подключено</span></div>
     <textarea id="chat-log" class="form-control"  rows="10"></textarea><br>
-    <input id="chat-message-input" type="text" class="form-control" ><br>
+    <div class="input-group mb-2">
+    <input id="chat-message-input" type="text" class="form-control" >
     <input id="chat-message-submit" class="btn btn-primary" type="button" value="Send">
+    </div>
     {{ user_1|json_script:"user" }}
 
     <script>
@@ -175,7 +182,7 @@
                         let btn_enter = document.createElement('button');
                         btn_enter.innerHTML='подключиться к чату';
                         btn_enter.className = 'btn btn-primary';
-                        btn_enter.setAttribute( 'onclick', `update_room(${element2.id})`);
+                        btn_enter.setAttribute( 'onclick', `chat_func(${element2.id})`);
 
                         room_li.append(btn_enter);
                         if (user.pk === element.id) {
@@ -204,23 +211,34 @@
             console.log(data_user_list);
             document.querySelector('#user-list').value += (data_user_list.name + '\n');
         };
-        function chat_func(){
+        var globalChatSocket;
+        function chat_func(roomId){
             // const roomName = JSON.parse(document.getElementById('room-name').textContent);
+            chatLog = document.querySelector('#chat-log')
+            spanRoomName = document.querySelector('#span-room-name')
+            spanRoomName.innerHTML = roomId
+            chatLog.value = ''
+            console.log(typeof(globalChatSocket));
+            if (typeof globalChatSocket !== 'undefined'){
+                globalChatSocket.close(1000,'switch room')
 
-            const chatSocket = new WebSocket(
+            }
+
+            // const chatSocket = new WebSocket(
+            globalChatSocket = new WebSocket(
                 'ws://'
                 + window.location.host
                 + '/ws/chat/'
-                + roomName
+                + roomId
                 + '/'
             );
 
-            chatSocket.onmessage = function(e) {
+            globalChatSocket.onmessage = function(e) {
                 const data = JSON.parse(e.data);
                 document.querySelector('#chat-log').value += (data.message + '\n');
             };
 
-            chatSocket.onclose = function(e) {
+            globalChatSocket.onclose = function(e) {
                 console.error('Chat socket closed unexpectedly');
             };
 
@@ -234,7 +252,7 @@
             document.querySelector('#chat-message-submit').onclick = function(e) {
                 const messageInputDom = document.querySelector('#chat-message-input');
                 const message = '{{ user.username }}: ' + messageInputDom.value;
-                chatSocket.send(JSON.stringify({
+                globalChatSocket.send(JSON.stringify({
                     'message': message
                 }));
                 messageInputDom.value = '';
