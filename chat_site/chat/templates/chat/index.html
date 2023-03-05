@@ -2,11 +2,11 @@
 
 {% block content %}
     {% csrf_token %}
-    В какую чат-комнату вы хотите войти?<br>
-    <div class="input-group mb-2">
-    <input id="room-name-input" class="form-control col-2" type="text" size="100" value="default">
-    <input id="room-name-submit" type="button" class="btn btn-primary col-3" value="Enter">
-    </div>
+    {# В какую чат-комнату вы хотите войти?<br> #}
+    {# <div class="input-group mb-2"> #}
+    {# <input id="room-name-input" class="form-control col-2" type="text" size="100" value="default"> #}
+    {# <input id="room-name-submit" type="button" class="btn btn-primary col-3" value="Enter"> #}
+    {# </div> #}
 
     <h2>Список пользователей и комнат</h2>
     <ol id="user-list">
@@ -21,27 +21,29 @@
     <button id="add-room-btn" class="btn btn-primary">Добавить, изменить комнату</button>
     </div>
     <h2>Чат</h2>
-    <div><strong>Пользователь: </strong> <span>{{user.username}}</span>, <strong>Комната: </strong> <span id="span-room-name">не подключено</span></div>
+    <div><strong>Текущий Ппльзователь: </strong> <span>{{user.username}}</span></div>
+    <div><strong>Комната: </strong> <span id="span-room-name">не подключено</span></div>
+    <div><strong>Пользователь - владелец комнаты: </strong> <span id="span-room-owner">не подключено</span>
     <textarea id="chat-log" class="form-control"  rows="10"></textarea><br>
     <div class="input-group mb-2">
     <input id="chat-message-input" type="text" class="form-control" >
-    <input id="chat-message-submit" class="btn btn-primary" type="button" value="Send">
+    <input id="chat-message-submit" class="btn btn-primary" type="button" value="Отправить сообщение">
     </div>
     {{ user_1|json_script:"user" }}
 
     <script>
 
-        document.querySelector('#room-name-input').focus();
-        document.querySelector('#room-name-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#room-name-submit').click();
-            }
-        };
+        // document.querySelector('#room-name-input').focus();
+        // document.querySelector('#room-name-input').onkeyup = function(e) {
+        //     if (e.keyCode === 13) {  // enter, return
+        //         document.querySelector('#room-name-submit').click();
+        //     }
+        // };
 
-        document.querySelector('#room-name-submit').onclick = function(e) {
-            var roomName = document.querySelector('#room-name-input').value;
-            window.location.pathname = '/chat/' + roomName + '/';
-        };
+        // document.querySelector('#room-name-submit').onclick = function(e) {
+        //     var roomName = document.querySelector('#room-name-input').value;
+        //     window.location.pathname = '/chat/' + roomName + '/';
+        // };
 
         const user_list_ol = document.querySelector('#user-list')
 
@@ -182,7 +184,7 @@
                         let btn_enter = document.createElement('button');
                         btn_enter.innerHTML='подключиться к чату';
                         btn_enter.className = 'btn btn-primary';
-                        btn_enter.setAttribute( 'onclick', `chat_func(${element2.id})`);
+                        btn_enter.setAttribute( 'onclick', `chat_func(${element2.id}, "${element2.name}", "${element.username}")`);
 
                         room_li.append(btn_enter);
                         if (user.pk === element.id) {
@@ -212,11 +214,15 @@
             document.querySelector('#user-list').value += (data_user_list.name + '\n');
         };
         var globalChatSocket;
-        function chat_func(roomId){
+        function chat_func(roomId, roomName, roomOwner){
             // const roomName = JSON.parse(document.getElementById('room-name').textContent);
             chatLog = document.querySelector('#chat-log')
             spanRoomName = document.querySelector('#span-room-name')
-            spanRoomName.innerHTML = roomId
+            spanRoomName.innerHTML = roomName
+
+            spanRoomOwner = document.querySelector('#span-room-owner')
+            spanRoomOwner.innerHTML = roomOwner
+
             chatLog.value = ''
             console.log(typeof(globalChatSocket));
             if (typeof globalChatSocket !== 'undefined'){

@@ -4,8 +4,8 @@
 
 
 <!--Register-->
-<div class="container py-5">
-	<h1>Register</h1>
+<div class="container">
+	<h1>Регистрация</h1>
     {% for field in register_form %}
     <div class="fieldWrapper">
         {{ field.errors }}
@@ -16,10 +16,12 @@
     </div>
 	<form method="POST">
 		{% csrf_token %}
+        <table>
 		{{ register_form.as_table }}
-		<button class="btn btn-primary" type="submit">Register</button>
+        </table>
+		<button class="btn btn-primary" type="submit">Зарегистрироваться</button>
 	</form>
-	<p class="text-center">If you already have an account, <a href="/login">login</a> instead.</p>
+	<p class="text-center">Если вы уже зарегистрированы <a href="{% url 'login' %}">то осуществите вход</a></p>
 </div>
 
 {% endblock %}
