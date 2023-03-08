@@ -1,17 +1,17 @@
 .client-text {
     font-weight: bold;
-    ...
+    color: blue;
 }
 
 .internet-text {
-    text-transform: ...
+    text-transform: uppercase; 
 }
 
 .browser-text {
     font-style: italic;
-    ...
+    color: orange;
 }
 
 .server-text {
-    ...
+    color: red; 
 }
