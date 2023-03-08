@@ -1,0 +1,17 @@
+.client-text {
+    font-weight: bold;
+    ...
+}
+
+.internet-text {
+    text-transform: ...
+}
+
+.browser-text {
+    font-style: italic;
+    ...
+}
+
+.server-text {
+    ...
+}
